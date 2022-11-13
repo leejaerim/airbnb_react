@@ -19,3 +19,23 @@ You will also see any lint errors in the console.
 
 ### Install react-router-dom
 `npm i react-router-dom`
+
+
+### Modal Content
+```python
+               <Modal isOpen={isOpen} onClose={onClose}>
+                    <ModalOverlay />
+                    <ModalContent>
+                        <ModalHeader>
+                            Login
+                        </ModalHeader>
+                        <ModalCloseButton />
+                        <ModalBody>
+                            Hello
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button colorScheme={"red"}>Close</Button>
+                        </ModalFooter>
+                    </ModalContent>
+                </Modal>
+```
