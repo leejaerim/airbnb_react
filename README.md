@@ -39,3 +39,35 @@ You will also see any lint errors in the console.
                     </ModalContent>
                 </Modal>
 ```
+
+### cors-header in django
+> https://pypi.org/project/django-cors-headers/
+
+- add it installed apps
+```python
+INSTALLED_APPS = [
+    ...,
+    "corsheaders",
+    ...,
+]
+```
+
+- add a middleware class
+```python
+MIDDLEWARE = [
+    ...,
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    ...,
+]
+```
+
+- write allowed origin 
+```python
+CORS_ALLOWED_ORIGINS = [
+    "https://example.com",
+    "https://sub.example.com",
+    "http://localhost:8080",
+    "http://127.0.0.1:9000",
+]
+```
