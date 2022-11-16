@@ -3,26 +3,11 @@ import { FaHeart, FaRegHeart, FaStar } from "react-icons/fa";
 import Room from "../components/Room";
 import { useQuery } from "@tanstack/react-query";
 import { getRooms } from "../api";
-
-interface Photo {
-    pk: number;
-    file: string;
-    description: string;
-}
-
-interface Room {
-    pk: number;
-    name: string;
-    country: string;
-    city: string;
-    price: number;
-    rating: string;
-    is_owner: boolean;
-    photos: Photo[];
-}
+import { Link } from "react-router-dom";
+import { IRoomList } from "../types";
 
 export default function Home() {
-    const { isLoading, data } = useQuery<Room[]>(["rooms"], getRooms); //key using cacheing
+    const { isLoading, data } = useQuery<IRoomList[]>(["rooms"], getRooms); //key using cacheing
     return (
         <Grid mt={10} px={{
             base: 10,
@@ -42,6 +27,7 @@ export default function Home() {
             ) : (null)}
             {data?.map((room) => (
                 <Room
+                    pk={room.pk}
                     ImageUrl={
                         `https://source.unsplash.com/random/450x${450 + room.pk}`
                     }
