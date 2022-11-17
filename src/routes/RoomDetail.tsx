@@ -1,13 +1,15 @@
-import { Box, Grid, Heading, Skeleton, Image, GridItem } from "@chakra-ui/react";
+import { Text, Box, Grid, Heading, Skeleton, Image, GridItem, VStack, HStack, Avatar, Container } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
+import { FaStar } from "react-icons/fa";
 import { useParams } from "react-router-dom";
-import { getRoom } from "../api";
-import { IRoomDetail } from "../types";
+import { getRoom, getRoomReView } from "../api";
+import { IReview, IRoomDetail } from "../types";
 
 export default function RoomDetail() {
     // how to get param data.
     const { roomPk } = useParams();
     const { isLoading, data } = useQuery<IRoomDetail>([`rooms`, roomPk], getRoom)
+    const { data: reviewsData, isLoading: isReviewsReview } = useQuery<IReview[]>([`rooms`, roomPk, `reviews`], getRoomReView)
     console.log(data)
 
     return (
@@ -27,6 +29,49 @@ export default function RoomDetail() {
                     </GridItem>
                 ))}
             </Grid>
+            <HStack justifyContent={"space-between"} mt={10}>
+                <VStack>
+                    <Heading fontSize={"xl"}> House Hosted by {data?.owner.name}</Heading>
+                    <HStack justifyContent={"flex-start"} w="100%">
+                        <Text>{data?.toilets} toliet {data?.toilets === 1 ? "" : "s"} </Text>
+                        <Text>-</Text>
+                        <Text>{data?.rooms} Room{data?.rooms === 1 ? "" : "s"}</Text>
+                    </HStack>
+                </VStack>
+                <Avatar name={data?.owner.name} size={"xl"} src={data?.owner.avatar}></Avatar>
+
+            </HStack>
+            <Box mt={10}>
+                <Heading mb={5} fontSize={"2xl"}>
+                    <HStack>
+                        <FaStar /><Text>{data?.rating}-</Text>
+                        <Text>{reviewsData?.length} review {reviewsData?.length === 1 ? "" : "s"}</Text>
+                    </HStack>
+                </Heading>
+                <Container mt={15} maxW="container.lg" marginX={"none"}>
+                    <Grid gap={10} templateColumns={"1fr 1fr"}>
+                        {reviewsData?.map((review, index) => (
+                            <VStack alignItems={"flex-start"} key={index}>
+                                <HStack>
+                                    <Avatar name={review.user.name} src={review.user.avatar} size="md"></Avatar>
+                                    <VStack>
+                                        <Heading fontSize={"md"}>
+                                            {review.user.name}
+                                        </Heading>
+                                        <HStack spacing={1}>
+                                            <FaStar size={"12px"} />
+                                            <Text>{review.rating}</Text>
+                                        </HStack>
+                                    </VStack>
+                                </HStack>
+                                <Text>
+                                    {review.payload}
+                                </Text>
+                            </VStack>
+                        ))}
+                    </Grid>
+                </Container>
+            </Box>
         </Box>
     )
 }
