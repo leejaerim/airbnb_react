@@ -59,3 +59,29 @@ export const kakaoLogin = (code: string) =>
       }
     )
     .then((response) => response.status);
+
+export interface IUsernameLoginVariables {
+  username: string;
+  password: string;
+}
+export interface IUsernameLoginSuccess {
+  ok: string;
+}
+export interface IUsernameLoginError {
+  error: string;
+}
+export const usernameLogin = ({
+  username,
+  password,
+}: IUsernameLoginVariables) =>
+  axiosInstance
+    .post(
+      `/users/login`,
+      { username, password },
+      {
+        headers: {
+          "X-CSRFToken": Cookies.get("csrftoken") || "",
+        },
+      }
+    )
+    .then((response) => response.status);

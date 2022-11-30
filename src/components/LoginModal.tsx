@@ -11,30 +11,57 @@ import {
   ModalHeader,
   ModalOverlay,
   useDisclosure,
+  useToast,
   VStack,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { FaUserAlt, FaLock } from "react-icons/fa";
 import SocialLogin from "./SocialLogin";
-
+import { useForm } from "react-hook-form";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  IUsernameLoginError,
+  IUsernameLoginSuccess,
+  IUsernameLoginVariables,
+  usernameLogin,
+} from "../api";
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
+interface IForm {
+  username: string;
+  password: string;
+}
 
 export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const onChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
-    const { name, value } = event.currentTarget;
-    if (name === "username") {
-      setUsername(value);
-    } else if (name === "password") {
-      setPassword(value);
-    }
-  };
-  const onSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
-    event?.preventDefault();
+  const {
+    register,
+    watch,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IForm>();
+  const toast = useToast();
+  const queryClient = useQueryClient();
+  const mutation = useMutation(usernameLogin, {
+    onMutate: () => {
+      toast({
+        title: "wellcome",
+        status: "success",
+      });
+      console.log("Mutation Starting");
+      onClose();
+      queryClient.refetchQueries(["me"]);
+    },
+    onSuccess: (data) => {
+      console.log("Mutation Success");
+    },
+    onError: (error) => {
+      console.log("Mutation Starting");
+    },
+  });
+  const onSubmit = ({ username, password }: IForm) => {
+    mutation.mutate({ username, password });
   };
   return (
     <Modal motionPreset="slideInRight" isOpen={isOpen} onClose={onClose}>
@@ -42,7 +69,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       <ModalContent>
         <ModalHeader>Login</ModalHeader>
         <ModalCloseButton />
-        <ModalBody as="form" onSubmit={onSubmit as any}>
+        <ModalBody as="form" onSubmit={handleSubmit(onSubmit)}>
           <VStack>
             <InputGroup>
               <InputLeftElement
@@ -53,10 +80,8 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 }
               />
               <Input
-                required
-                name="username"
-                onChange={onChange}
-                value={username}
+                isInvalid={Boolean(errors.username?.message)}
+                {...register("username", { required: "Plz. write a username" })}
                 variant={"filled"}
                 placeholder="username"
               />
@@ -70,17 +95,21 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 }
               />
               <Input
-                required
+                isInvalid={Boolean(errors.password?.message)}
+                {...register("password", { required: "Plz. write a password" })}
                 type="password"
-                name="password"
-                onChange={onChange}
-                value={password}
                 variant={"filled"}
                 placeholder="password"
               ></Input>
             </InputGroup>
           </VStack>
-          <Button type="submit" mt={4} colorScheme={"red"} w="100%">
+          <Button
+            isLoading={mutation.isLoading}
+            type="submit"
+            mt={4}
+            colorScheme={"red"}
+            w="100%"
+          >
             Login
           </Button>
           <SocialLogin></SocialLogin>
