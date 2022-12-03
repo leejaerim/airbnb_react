@@ -14,9 +14,12 @@ import {
   MenuList,
   MenuItem,
   useToast,
+  ToastId,
 } from "@chakra-ui/react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRef } from "react";
 import { FaAirbnb, FaMoon, FaSun } from "react-icons/fa";
+import { Link } from "react-router-dom";
 import { logout } from "../api";
 import useUser from "../lib/useUser";
 import LoginModal from "./LoginModal";
@@ -39,22 +42,30 @@ export default function Header() {
   const Icon = useColorModeValue(FaMoon, FaSun);
   const toast = useToast();
   const queryClient = useQueryClient();
-  const onlogOut = async () => {
-    const toastId = toast({
-      title: "Good Bye!",
-      description: "See you",
-      status: "loading",
-      position: "bottom-right",
-    });
-    await logout();
-    queryClient.refetchQueries(["me"]);
-    setTimeout(() => {
-      toast.update(toastId, {
-        status: "success",
-        title: "done",
-        description: "see you!",
+  const toastId = useRef<ToastId>();
+  const mutation = useMutation(logout, {
+    onMutate: () => {
+      toastId.current = toast({
+        title: "Good Bye!",
+        description: "See you",
+        status: "loading",
+        position: "bottom-right",
       });
-    }, 5000);
+    },
+    onSuccess: () => {
+      if (toastId.current) {
+        queryClient.refetchQueries(["me"]);
+        toast.update(toastId.current, {
+          status: "success",
+          title: "done",
+          description: "see you!",
+        });
+      }
+    },
+  });
+  const onlogOut = async () => {
+    //await logout();
+    mutation.mutate();
   };
   return (
     <Stack
@@ -101,6 +112,11 @@ export default function Header() {
                   <Avatar size={"md"} src={user.avatar}></Avatar>
                 </MenuButton>
                 <MenuList>
+                  {user?.is_host ? (
+                    <Link to="/rooms/upload">
+                      <MenuItem>Upload room</MenuItem>
+                    </Link>
+                  ) : null}
                   <MenuItem onClick={onlogOut}>Log out</MenuItem>
                 </MenuList>
               </>

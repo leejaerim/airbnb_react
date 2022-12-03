@@ -40,6 +40,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     watch,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<IForm>();
   const toast = useToast();
   const queryClient = useQueryClient();
@@ -51,6 +52,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       });
       console.log("Mutation Starting");
       onClose();
+      reset();
       queryClient.refetchQueries(["me"]);
     },
     onSuccess: (data) => {
