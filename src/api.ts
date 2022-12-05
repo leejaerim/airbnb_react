@@ -85,3 +85,30 @@ export const usernameLogin = ({
       }
     )
     .then((response) => response.status);
+
+export const getAmenities = () =>
+  axiosInstance.get(`rooms/amenities`).then((response) => response.data);
+export const getCategory = () =>
+  axiosInstance.get(`categories`).then((response) => response.data);
+export interface IUploadRoomVariables {
+  name: string;
+  country: string;
+  city: string;
+  price: number;
+  rooms: number;
+  toilets: number;
+  description: string;
+  address: string;
+  pet_friendly: boolean;
+  kind: string;
+  amenities: number[];
+  category: number;
+}
+export const uploadRoom = (variables: IUploadRoomVariables) =>
+  axiosInstance
+    .post(`rooms/`, variables, {
+      headers: {
+        "X-CSRFToken": Cookies.get("csrftoken") || "",
+      },
+    })
+    .then((response) => response.status);

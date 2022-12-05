@@ -2,18 +2,15 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useUser from "../lib/useUser";
 
-interface IProtectPageProps {
-  children: React.ReactNode;
-}
-export default function HostOnlyPage({ children }: IProtectPageProps) {
-  const { user, isLoggedIn, userLoading } = useUser();
+export default function useHostOnlyPage() {
+  const { user, userLoading } = useUser();
   const navigate = useNavigate();
   useEffect(() => {
     if (!userLoading) {
-      if (!isLoggedIn) {
+      if (!user?.is_host) {
         navigate("/");
       }
     }
-  }, [userLoading, isLoggedIn]);
-  return <>{children}</>;
+  }, [userLoading, user, navigate]);
+  return;
 }
