@@ -111,4 +111,49 @@ export const uploadRoom = (variables: IUploadRoomVariables) =>
         "X-CSRFToken": Cookies.get("csrftoken") || "",
       },
     })
-    .then((response) => response.status);
+    .then((response) => response.data);
+export const getUploadURL = () =>
+  axiosInstance
+    .post(`medias/photos/get-url`, null, {
+      headers: {
+        "X-CSRFToken": Cookies.get("csrftoken") || "",
+      },
+    })
+    .then((response) => response.data);
+export interface IUploadImageVarialbes {
+  file: FileList;
+  uploadURL: string;
+}
+
+export const uploadImage = ({ file, uploadURL }: IUploadImageVarialbes) => {
+  const form = new FormData();
+  form.append("file", file[0]);
+  return axios
+    .post(uploadURL, form, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+    .then((response) => response.data);
+};
+export interface ICreatePhotoVariables {
+  description: string;
+  file: string;
+  roomPk: string;
+}
+export const createPhoto = ({
+  description,
+  file,
+  roomPk,
+}: ICreatePhotoVariables) =>
+  axiosInstance
+    .post(
+      `rooms/${roomPk}/photos`,
+      { description, file },
+      {
+        headers: {
+          "X-CSRFToken": Cookies.get("csrftoken") || "",
+        },
+      }
+    )
+    .then((response) => response.data);
