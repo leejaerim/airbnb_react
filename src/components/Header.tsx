@@ -24,6 +24,7 @@ import { logout } from "../api";
 import useUser from "../lib/useUser";
 import LoginModal from "./LoginModal";
 import SignUpModal from "./SignUp";
+import {MyPageModal} from "./MyPageModal";
 
 export default function Header() {
   const { userLoading, user, isLoggedIn } = useUser();
@@ -36,6 +37,11 @@ export default function Header() {
     isOpen: isSignUpOpen,
     onClose: onSignUpClose,
     onOpen: onSignUpOpen,
+  } = useDisclosure();
+  const {
+    isOpen : isMyPageOpen,
+    onClose: onMyPageClose,
+    onOpen: onMyPageOpen,
   } = useDisclosure();
   const { colorMode, toggleColorMode } = useColorMode();
   const logoColor = useColorModeValue("red.500", "red.300");
@@ -117,6 +123,7 @@ export default function Header() {
                       <MenuItem>Upload room</MenuItem>
                     </Link>
                   ) : null}
+                  <MenuItem onClick={onMyPageOpen}>MyPage</MenuItem>
                   <MenuItem onClick={onlogOut}>Log out</MenuItem>
                 </MenuList>
               </>
@@ -124,6 +131,7 @@ export default function Header() {
           )
         ) : null}
       </HStack>
+      <MyPageModal isOpen={isMyPageOpen} onClose={onMyPageClose} user={user}></MyPageModal>
       <LoginModal isOpen={isLoginOpen} onClose={onLoginClose} />
       <SignUpModal isOpen={isSignUpOpen} onClose={onSignUpClose} />
     </Stack>

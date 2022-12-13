@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 import { formatDate } from "./lib/utils";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:8000/api/v1/",
+  baseURL: "http://127.0.0.1:8000/api/v1/",
   withCredentials: true,
 });
 export const getRooms = () =>
