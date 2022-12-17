@@ -134,7 +134,7 @@ export default function RoomDetail() {
         />
         <Button
           disabled={checkBookingData?.ok}
-          isLoading={isCheckBooking}
+          isLoading={isCheckBooking && dates !== undefined}
           mt={5}
           w="100%"
           colorScheme={"red"}

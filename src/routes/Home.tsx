@@ -44,6 +44,7 @@ export default function Home() {
       ) : null}
       {data?.map((room) => (
         <Room
+          key={room.pk}
           pk={room.pk}
           isOwner={room.is_owner}
           ImageUrl={`https://source.unsplash.com/random/450x${450 + room.pk}`}
