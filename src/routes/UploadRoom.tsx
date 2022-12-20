@@ -68,7 +68,6 @@ export default function UploadRoom() {
   >(["categories"], getCategory);
   useHostOnlyPage();
   const onSubmit = (data: IUploadRoomVariables) => {
-    debugger;
     mutation.mutate(data);
   };
   return (

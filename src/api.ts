@@ -170,7 +170,7 @@ export const checkBooking = ({
     const Checkout = formatDate(secondDate);
     return axiosInstance
       .get(
-        `room/${roomPk}/bookings/check?check_in=${Checkin}&check_out=${Checkout}`
+        `rooms/${roomPk}/bookings/check?check_in=${Checkin}&check_out=${Checkout}`
       )
       .then((response) => response.data);
   }
