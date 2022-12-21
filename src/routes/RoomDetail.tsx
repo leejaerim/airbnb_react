@@ -11,19 +11,23 @@ import {
   HStack,
   Avatar,
   Container,
-  Button,
+  Button, InputLeftElement, Input, InputGroup, FormLabel, Select, FormControl,
 } from "@chakra-ui/react";
 
-import { useQuery } from "@tanstack/react-query";
-import { FaStar } from "react-icons/fa";
+import {useMutation, useQuery} from "@tanstack/react-query";
+import {FaStar, FaUserAlt} from "react-icons/fa";
 import { useParams } from "react-router-dom";
-import { checkBooking, getRoom, getRoomReView } from "../api";
+import {checkBooking, getRoom, getRoomReView, IUploadReview, uploadReview} from "../api";
 import { IReview, IRoomDetail } from "../types";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
+import useUser from "../lib/useUser";
+import {useForm} from "react-hook-form";
 export default function RoomDetail() {
+  const { register, handleSubmit } = useForm<IUploadReview>();
   // how to get param data.
   const { roomPk } = useParams();
+  const { userLoading, user, isLoggedIn} = useUser();
   const { isLoading, data } = useQuery<IRoomDetail>([`rooms`, roomPk], getRoom);
   const { data: reviewsData, isLoading: isReviewsReview } = useQuery<IReview[]>(
     [`rooms`, roomPk, `reviews`],
@@ -35,7 +39,15 @@ export default function RoomDetail() {
     checkBooking,
     { cacheTime: 0, enabled: dates !== undefined }
   );
-
+  const mutation = useMutation(uploadReview,{
+    onSuccess:(data)=>{
+      console.log(data)
+    }
+  })
+  const onSubmit = (data: IUploadReview)=>{
+    console.log(roomPk)
+    mutation.mutate(data)
+  }
   return (
     <Box mt={8} rounded="lg" overflow={"hidden"} px={{ base: 10, lg: 10 }}>
       <Helmet>
@@ -120,6 +132,41 @@ export default function RoomDetail() {
               </VStack>
             ))}
           </Grid>
+          <HStack  spacing={'5'} as="form"
+                   onSubmit={handleSubmit(onSubmit)}>
+          <InputGroup>
+            <InputLeftElement
+                children={
+                  <Box color="gray.400">
+                    <FaUserAlt />
+                  </Box>
+                }
+            />
+            <Input
+                variant={"filled"}
+                placeholder=""
+                {...register("payload", { required: true })}
+            />
+            <FormControl>
+              <FormLabel ml={"20px"}>Rate</FormLabel>
+              <Select placeholder='Select Rating'
+                      {...register("rating", { required: true })}>
+                {[1, 2, 3, 4, 5].map((id) => (
+                    <option key={id} value={id}>{id}</option>
+                ))}
+              </Select>
+            </FormControl>
+            <Button
+                type="submit"
+                disabled={ isLoading || !isLoggedIn }
+                size={"md"}
+                w="50%"
+                colorScheme={"red"}
+            >
+              Register Review
+            </Button>
+          </InputGroup>
+          </HStack>
         </Container>
       </Box>
       <Box>
@@ -143,7 +190,7 @@ export default function RoomDetail() {
         </Button>
         {!isCheckBooking && !checkBookingData?.ok ? (
           <Text color="red.500">Can't Book</Text>
-        ) : null}
+        ) : <Text color="Green.500">Booked</Text>}
       </Box>
     </Box>
   );

@@ -113,6 +113,16 @@ export const uploadRoom = (variables: IUploadRoomVariables) =>
       },
     })
     .then((response) => response.data);
+export interface IUploadReview {
+    payload : string;
+    rating : number;
+}
+export const uploadReview = (values : IUploadReview)=>
+    axiosInstance.post(`rooms/2/reviews`,values, {
+        headers: {
+            "X-CSRFToken": Cookies.get("csrftoken") || "",
+        },
+    }).then((response) => response.data);
 export const getUploadURL = () =>
   axiosInstance
     .post(`medias/photos/get-url`, null, {
