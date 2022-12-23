@@ -45,8 +45,8 @@ export default function RoomDetail() {
     }
   })
   const onSubmit = (data: IUploadReview)=>{
-    console.log(roomPk)
-    mutation.mutate(data)
+    if(roomPk)
+      mutation.mutate({...data,'roomPk': roomPk});
   }
   return (
     <Box mt={8} rounded="lg" overflow={"hidden"} px={{ base: 10, lg: 10 }}>

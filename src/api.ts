@@ -116,9 +116,10 @@ export const uploadRoom = (variables: IUploadRoomVariables) =>
 export interface IUploadReview {
     payload : string;
     rating : number;
+    roomPk : string;
 }
 export const uploadReview = (values : IUploadReview)=>
-    axiosInstance.post(`rooms/2/reviews`,values, {
+    axiosInstance.post(`rooms/${values.roomPk}/reviews/`,values, {
         headers: {
             "X-CSRFToken": Cookies.get("csrftoken") || "",
         },
