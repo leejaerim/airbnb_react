@@ -23,7 +23,12 @@ import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import useUser from "../lib/useUser";
 import {useForm} from "react-hook-form";
+import RatingStars from "../components/RatingStar";
 export default function RoomDetail() {
+  const [rating, setRating] = useState(0);
+  const handleRatingChange = (newRating: number) => {
+    setRating(newRating);
+  };
   const { register, handleSubmit } = useForm<IUploadReview>();
   // how to get param data.
   const { roomPk } = useParams();
@@ -46,7 +51,7 @@ export default function RoomDetail() {
   })
   const onSubmit = (data: IUploadReview)=>{
     if(roomPk)
-      mutation.mutate({...data,'roomPk': roomPk});
+      mutation.mutate({...data,'roomPk': roomPk, 'rating':rating});
   }
   return (
     <Box mt={8} rounded="lg" overflow={"hidden"} px={{ base: 10, lg: 10 }}>
@@ -113,32 +118,33 @@ export default function RoomDetail() {
         <Container mt={15} maxW="container.lg" marginX={"none"}>
           <Grid gap={10} templateColumns={"1fr 1fr"}>
             {reviewsData?.map((review, index) => (
-              <VStack alignItems={"flex-start"} key={index}>
                 <HStack>
                   <Avatar
                     name={review.user.name}
                     src={review.user.avatar}
                     size="md"
                   ></Avatar>
-                  <VStack>
                     <Heading fontSize={"md"}>{review.user.name}</Heading>
                     <HStack spacing={1}>
                       <FaStar size={"12px"} />
                       <Text>{review.rating}</Text>
                     </HStack>
-                  </VStack>
+                  <Text>{review.payload}</Text>
                 </HStack>
-                <Text>{review.payload}</Text>
-              </VStack>
             ))}
           </Grid>
-          <HStack  spacing={'5'} as="form"
+          <Button mt={"20px"}> Next </Button>
+          <HStack mt={"20px"}  spacing={'5'} as="form"
                    onSubmit={handleSubmit(onSubmit)}>
-          <InputGroup>
+          <InputGroup width={'100%'}>
             <InputLeftElement
                 children={
                   <Box color="gray.400">
-                    <FaUserAlt />
+                    <Avatar
+                        name={user?.username}
+                        src={user?.avatar}
+                        size="md"
+                    ></Avatar>
                   </Box>
                 }
             />
@@ -147,15 +153,7 @@ export default function RoomDetail() {
                 placeholder=""
                 {...register("payload", { required: true })}
             />
-            <FormControl>
-              <FormLabel ml={"20px"}>Rate</FormLabel>
-              <Select placeholder='Select Rating'
-                      {...register("rating", { required: true })}>
-                {[1, 2, 3, 4, 5].map((id) => (
-                    <option key={id} value={id}>{id}</option>
-                ))}
-              </Select>
-            </FormControl>
+            <RatingStars  rating={rating} onChange={handleRatingChange} />
             <Button
                 type="submit"
                 disabled={ isLoading || !isLoggedIn }
